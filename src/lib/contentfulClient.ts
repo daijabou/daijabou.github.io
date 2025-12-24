@@ -87,7 +87,7 @@ export async function getExperienceEntries(): Promise<ExperienceFields[]> {
     }
 
     try {
-        const contentType = import.meta.env.VITE_CONTENTFUL_EXPERIENCE_CONTENT_TYPE || 'experience';
+        const contentType = 'experience';
 
         const response = await client.getEntries<ExperienceSkeleton>({
             content_type: contentType as 'experience',
