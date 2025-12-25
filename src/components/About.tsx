@@ -3,7 +3,7 @@ import { Typewriter } from "./Typewriter"
 export const About = () => {
     return (
         <div id="about" className="flex justify-center items-center p-4 py-16 h-screen
-        bg-[radial-gradient(#e5e7eb_4px,transparent_4px)] [background-size:16px_16px] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)]
+                   bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#09090b_1px)] bg-[size:20px_20px]
         ">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:w-[70%]">
                 <div className="flex items-center justify-center">

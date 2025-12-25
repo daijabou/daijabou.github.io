@@ -60,13 +60,10 @@ export const Header = () => {
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed top-0 left-0 w-full bg-gray-950 backdrop-blur-md shadow-sm z-50 py-4 px-6"
+            className="fixed top-0 left-0 w-full bg-zinc-900 backdrop-blur-md shadow-sm z-50 py-4 px-6"
         >
             <div className="max-w-7xl mx-auto flex justify-between items-center">
-                <div className="text-xl font-bold text-green-400">
-                    &gt;MICHAEL
-                </div>
-
+                <img src="logo.png" alt="" className='w-16 -my-5 hover:drop-shadow-[0_0_5px_rgba(34,197,94,0.8)] transition-all duration-300' />
                 {/* Desktop Navigation */}
                 <nav className="hidden md:block">
                     <ul className="flex gap-6 text-sm font-medium text-white-600">

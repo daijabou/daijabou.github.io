@@ -132,8 +132,12 @@ export const Experience = () => {
     return (
         <section id="experience" className="relative min-h-screen bg-zinc-950 py-20">
             {/* Grid Background */}
-            <div className="absolute inset-0  bg-[radial-gradient(#e5e7eb_4px,transparent_4px)] [background-size:16px_16px] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)]" />
-
+            <div
+                className="
+                absolute inset-0
+            bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#09090b_1px)] bg-[size:20px_20px]
+                "
+            />
             <div className="relative z-10 max-w-6xl mx-auto px-4">
                 {/* Section Title */}
                 <h2 className="text-4xl font-bold mb-16 text-green-400 text-center">
