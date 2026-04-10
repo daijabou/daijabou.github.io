@@ -35,7 +35,7 @@ export const Chatbot = () => {
         // Batch: append user message + empty assistant placeholder in one update
         setMessages([...nextMessages, { role: 'assistant', content: '' }]);
         setInput('');
-        setIsStreaming(true);
+         setIsStreaming(true);
 
         let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
 
