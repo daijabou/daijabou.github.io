@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(npm --version)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(vercel inspect:*)",
+      "Bash(vercel project:*)",
+      "Bash(vercel env:*)",
+      "Bash(vercel ls:*)",
+      "Bash(curl:*)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('rootDirectory:', d.get\\('rootDirectory'\\)\\); print\\('framework:', d.get\\('framework'\\)\\); print\\('buildCommand:', d.get\\('buildCommand'\\)\\); print\\('outputDirectory:', d.get\\('outputDirectory'\\)\\)\")",
+      "Bash(vercel --prod)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(m.get\\('id','?'\\)\\) for m in d.get\\('data',[]\\)]\")",
+      "Bash(npm uninstall:*)"
+    ]
+  }
+}

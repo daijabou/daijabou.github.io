@@ -4,6 +4,7 @@ import { Header } from "./components/Header"
 import { Skills } from "./components/Skills"
 import { Experience } from "./components/Experience"
 import { CallToAction } from "./components/CallToAction"
+import { Chatbot } from "./components/Chatbot"
 import { useState, useEffect } from "react";
 function App() {
   const [isShowHeader, setIsShowHeader] = useState(false);
@@ -33,6 +34,7 @@ function App() {
       <Skills />
       <Experience />
       <CallToAction />
+      <Chatbot />
     </>
   )
 }
