@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, X, Send, Loader2 } from 'lucide-react';
+import { Terminal, Send, Loader2 } from 'lucide-react';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -28,6 +28,18 @@ export const Chatbot = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim() || isStreaming) return;
+
+        if (input.trim() === '/exit') {
+            setInput('');
+            setIsOpen(false);
+            return;
+        }
+
+        if (input.trim() === '/clear') {
+            setInput('');
+            setMessages([]);
+            return;
+        }
 
         const userMessage: Message = { role: 'user', content: input.trim() };
         const nextMessages = [...messages, userMessage];
@@ -99,17 +111,19 @@ export const Chatbot = () => {
     return (
         <>
             {/* Floating trigger button */}
-            <button
-                onClick={() => setIsOpen(prev => !prev)}
-                aria-label={isOpen ? 'Close chat' : 'Open chat'}
-                className="fixed bottom-6 right-6 z-50 w-12 h-12
-                           bg-zinc-950 border-2 border-green-400 text-green-400
-                           flex items-center justify-center
-                           hover:bg-green-400 hover:text-zinc-950
-                           transition-colors duration-200"
-            >
-                {isOpen ? <X className="w-5 h-5" /> : <Terminal className="w-5 h-5" />}
-            </button>
+            {!isOpen && (
+                <button
+                    onClick={() => setIsOpen(true)}
+                    aria-label="Open chat"
+                    className="fixed bottom-6 right-6 z-50 w-12 h-12
+                               bg-zinc-950 border-2 border-green-400 text-green-400
+                               flex items-center justify-center
+                               hover:bg-green-400 hover:text-zinc-950
+                               transition-colors duration-200"
+                >
+                    <Terminal className="w-5 h-5" />
+                </button>
+            )}
 
             {/* Chat panel */}
             <AnimatePresence>
@@ -121,21 +135,14 @@ export const Chatbot = () => {
                         transition={{ type: 'tween', duration: 0.25, ease: 'easeInOut' }}
                         className="fixed top-0 right-0 h-screen w-full md:w-1/3
                                    bg-zinc-950 border-l border-green-400/50
-                                   flex flex-col z-40 font-mono"
+                                   flex flex-col z-[60] font-mono"
                     >
                         {/* Terminal header */}
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-green-400/30 flex-shrink-0">
+                        <div className="flex items-center px-4 py-3 border-b border-green-400/30 flex-shrink-0">
                             <div className="flex items-center gap-2">
                                 <Terminal className="w-4 h-4 text-green-400" />
                                 <span className="text-green-400 text-sm">michael@portfolio:~$</span>
                             </div>
-                            <button
-                                onClick={() => setIsOpen(false)}
-                                className="text-zinc-500 hover:text-green-400 transition-colors"
-                                aria-label="Close chat"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
                         </div>
 
                         {/* Messages */}
@@ -146,6 +153,10 @@ export const Chatbot = () => {
                                 <span className="text-green-400">
                                     Hi! I'm Michael's portfolio assistant. Ask me about his skills, experience, or background.
                                 </span>
+                            </div>
+                            <div className="flex gap-2">
+                                <span className="text-green-400/60 flex-shrink-0">$</span>
+                                <span className="text-zinc-500 text-xs">/exit to close · /clear to reset</span>
                             </div>
 
                             {messages.map((msg, i) => (
