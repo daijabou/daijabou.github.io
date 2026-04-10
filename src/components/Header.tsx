@@ -1,46 +1,6 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// Typing effect component for nav items
-const NavItemTypewriter = ({
-    text,
-    delay = 0,
-    typingSpeed = 50
-}: {
-    text: string;
-    delay?: number;
-    typingSpeed?: number;
-}) => {
-    const [displayText, setDisplayText] = useState('');
-    const [isComplete, setIsComplete] = useState(false);
-
-    useEffect(() => {
-        const startTimeout = setTimeout(() => {
-            let currentIndex = 0;
-            const interval = setInterval(() => {
-                if (currentIndex <= text.length) {
-                    setDisplayText(text.substring(0, currentIndex));
-                    currentIndex++;
-                } else {
-                    setIsComplete(true);
-                    clearInterval(interval);
-                }
-            }, typingSpeed);
-
-            return () => clearInterval(interval);
-        }, delay);
-
-        return () => clearTimeout(startTimeout);
-    }, [text, delay, typingSpeed]);
-
-    return (
-        <span>
-            {displayText}
-            {!isComplete && <span className="animate-pulse">|</span>}
-        </span>
-    );
-};
 
 export const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -67,14 +27,10 @@ export const Header = () => {
                 {/* Desktop Navigation */}
                 <nav className="hidden md:block">
                     <ul className="flex gap-6 text-sm font-medium text-white-600">
-                        {navItems.map((item, index) => (
+                        {navItems.map((item) => (
                             <li key={item.label}>
                                 <a href={item.href} className="hover:text-green-400 transition-colors">
-                                    <NavItemTypewriter
-                                        text={item.label}
-                                        delay={300 + index * 200}
-                                        typingSpeed={50}
-                                    />
+                                    {item.label}
                                 </a>
                             </li>
                         ))}
@@ -125,11 +81,7 @@ export const Header = () => {
                                         className="hover:text-green-400 transition-colors block py-2"
                                         onClick={closeMenu}
                                     >
-                                        <NavItemTypewriter
-                                            text={item.label}
-                                            delay={index * 150}
-                                            typingSpeed={40}
-                                        />
+                                        {item.label}
                                     </a>
                                 </motion.li>
                             ))}

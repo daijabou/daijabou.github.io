@@ -63,7 +63,7 @@ const ExperienceCard = ({ experience, isLeft }: ExperienceCardProps) => {
                                 text-zinc-400
                             border border-green-400/30
                                     transition-colors duration-200
-                                    group-hover:text-green-400/70
+                               
                                 "
                             >
                                 {tech}
