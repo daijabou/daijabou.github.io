@@ -176,27 +176,29 @@ export const CallToAction = () => {
                         </div>
 
                         {/* Submit Button */}
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full md:w-auto px-8 py-4 bg-green-400 text-zinc-900 font-bold font-mono
+                        <div className="flex justify-center">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full md:w-auto px-8 py-4 bg-green-400 text-zinc-900 font-bold font-mono
                                     flex items-center justify-center gap-3
                                      hover:bg-green-300 hover:shadow-lg hover:shadow-green-400/25
                                      disabled:opacity-50 disabled:cursor-not-allowed
                                      transition-all duration-300 group"
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    Sending...
-                                </>
-                            ) : (
-                                <>
-                                    Send Message
-                                    <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                </>
-                            )}
-                        </button>
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        Sending...
+                                    </>
+                                ) : (
+                                    <>
+                                        Send Message
+                                        <Send />
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </form>
                 </div>
 
