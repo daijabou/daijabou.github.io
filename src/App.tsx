@@ -1,40 +1,31 @@
 import { Hero } from "./components/Hero"
 import { About } from "./components/About"
-import { Header } from "./components/Header"
 import { Skills } from "./components/Skills"
 import { Experience } from "./components/Experience"
 import { CallToAction } from "./components/CallToAction"
 import { Chatbot } from "./components/Chatbot"
-import { useState, useEffect } from "react";
+import { StatusBar } from "./components/StatusBar"
+import { BootSequence } from "./components/BootSequence"
+import { MatrixRain } from "./components/effects/MatrixRain"
+import { CRTOverlay } from "./components/effects/CRTOverlay"
+
 function App() {
-  const [isShowHeader, setIsShowHeader] = useState(false);
-  const viewHeight = window.innerHeight;
-  console.log(viewHeight);
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY + 100 > viewHeight) {
-        setIsShowHeader(true);
-      } else {
-        setIsShowHeader(false);
-      }
-
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
     <>
+      <MatrixRain />
 
-      {isShowHeader && <Header />}
-      <Hero />
-      <About />
-      <Skills />
-      <Experience />
-      <CallToAction />
+      <div className="relative z-10">
+        <Hero />
+        <About />
+        <Skills />
+        <Experience />
+        <CallToAction />
+      </div>
+
       <Chatbot />
+      <StatusBar />
+      <CRTOverlay />
+      <BootSequence />
     </>
   )
 }

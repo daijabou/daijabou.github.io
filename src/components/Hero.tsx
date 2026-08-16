@@ -1,15 +1,22 @@
 import { Typewriter } from './Typewriter';
+import { GlitchText } from './effects/GlitchText';
 
 export const Hero = () => {
     return (
-        <section id="hero" className='relative h-screen bg-zinc-950'>
-            <div className="flex justify-center items-center h-screen bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] p-4">
+        <section id="hero" className='relative h-screen bg-term-void'>
+            <div className="flex justify-center items-center h-screen grid-bg p-4">
                 <div className="flex flex-row justify-center items-center px-5">
                     <div className="flex flex-col">
-                        <h1 className="text-5xl md:text-8xl font-bold">
-                            Hello, I'm <span className="text-green-400">Michael</span>
+                        <p className="font-ui text-sm md:text-base text-term-phosphor/60 mb-3">
+                            visitor@daijabou:~$ whoami
+                        </p>
+
+                        <h1 className="font-display text-6xl md:text-9xl text-term-bright leading-none">
+                            Hello, I'm{' '}
+                            <GlitchText text="Michael" className="text-term-phosphor text-glow" />
                         </h1>
-                        <p className="text-lg mt-4 md:text-4xl">
+
+                        <p className="text-base mt-4 md:text-3xl font-mono">
                             <Typewriter
                                 sentences={[
                                     "I'm a software developer.",
@@ -22,19 +29,14 @@ export const Hero = () => {
                                 delay={1500}
                             />
                         </p>
-                        <div className="flex justify-center items-center pt-5">
-                            <a href="#about" className="bg-black border-2 border-green-400 
-                    text-green-400 px-6 py-3 font-mono hover:bg-green-400 
-                    hover:text-black transition-colors">
-                                About Me
+
+                        <div className="flex justify-center items-center pt-8">
+                            <a href="#about" className="btn-term">
+                                $ cd ./about
                             </a>
                         </div>
                     </div>
-                    <div>
-
-                    </div>
                 </div>
-
             </div>
         </section>
     )

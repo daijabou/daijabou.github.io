@@ -6,6 +6,7 @@ interface TypewriterProps {
     deletingSpeed?: number;
     delay?: number;
     loop?: boolean;
+    className?: string;
 }
 
 export const Typewriter = ({
@@ -14,6 +15,7 @@ export const Typewriter = ({
     deletingSpeed = 100,
     delay = 2000,
     loop = true,
+    className = '',
 }: TypewriterProps) => {
     const [text, setText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
@@ -51,8 +53,9 @@ export const Typewriter = ({
     }, [text, isDeleting, loopNum, sentences, typingSpeed, deletingSpeed, delay, delta, loop]);
 
     return (
-        <span className="-r-2 border-green-400 animate-pulse pr-1 text-green-400">
+        <span className={`text-term-phosphor text-glow-soft ${className}`}>
             {text}
+            <span className="ml-0.5 inline-block h-[0.9em] w-[0.5em] translate-y-[0.1em] bg-term-phosphor animate-blink" />
         </span>
     );
 };

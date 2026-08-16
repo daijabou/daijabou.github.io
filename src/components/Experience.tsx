@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getExperienceEntries, type ExperienceFields } from '../lib/contentfulClient';
+import { SectionHeading } from './ui/SectionHeading';
+import { TerminalWindow } from './ui/TerminalWindow';
 
 interface ExperienceItem {
     company: string;
@@ -12,66 +14,64 @@ interface ExperienceItem {
 interface ExperienceCardProps {
     experience: ExperienceItem;
     isLeft: boolean;
+    isHead: boolean;
 }
 
-const ExperienceCard = ({ experience, isLeft }: ExperienceCardProps) => {
+const hashOf = (value: string) => {
+    let h = 0;
+    for (let i = 0; i < value.length; i++) {
+        h = (h * 31 + value.charCodeAt(i)) >>> 0;
+    }
+    return h.toString(16).padStart(7, '0').slice(0, 7);
+};
+
+const ExperienceCard = ({ experience, isLeft, isHead }: ExperienceCardProps) => {
+    const hash = hashOf(experience.company + experience.role);
+
     return (
         <div className={`
-            w-full md:w-[45%] 
+            w-full md:w-[45%]
             ${isLeft ? 'md:mr-auto md:pr-8' : 'md:ml-auto md:pl-8'}
             group
         `}>
-            <div className="
-        backdrop-blur-sm
-                border border-green-400
-                p-6 
-      
-            ">
-                {/* Duration Badge */}
-                <span className="
-                    inline-block px-3 py-1 
-                    text-xs font-mono 
-                    bg-green-400/10 text-green-400 
-                    border border-green-400/30 
-                  mb-3
-                ">
-                    {experience.duration}
-                </span>
+            <TerminalWindow
+                variant="git"
+                title={`commit ${hash}`}
+                meta={isHead ? '(HEAD -> main)' : undefined}
+                className="group-hover:shadow-glow group-hover:border-term-phosphor/70"
+            >
+                <div className="font-ui text-xs mb-4 space-y-0.5">
+                    <p className="text-term-text">
+                        <span className="text-term-phosphor/40">Author:&nbsp;</span>
+                        Michael Endaya &lt;michaelendaya3@gmail.com&gt;
+                    </p>
+                    <p className="text-term-text">
+                        <span className="text-term-phosphor/40">Date:&nbsp;&nbsp;&nbsp;</span>
+                        {experience.duration}
+                    </p>
+                </div>
 
-                {/* Role & Company */}
-                <h3 className="text-xl font-bold text-white mb-1">
+                <h3 className="font-display text-2xl text-term-bright mb-1">
                     {experience.role}
                 </h3>
-                <h4 className="text-green-400 font-mono text-sm mb-3">
+                <h4 className="text-term-phosphor font-ui text-sm mb-3 text-glow-soft">
                     @ {experience.company}
                 </h4>
 
-                {/* Description */}
-                <p className="text-zinc-400 text-sm leading-relaxed mb-4">
+                <p className="text-term-text text-sm leading-relaxed mb-4 font-mono">
                     {experience.description}
                 </p>
 
-                {/* Technologies */}
                 {experience.technologies && (
                     <div className="flex flex-wrap gap-2">
                         {experience.technologies.map((tech) => (
-                            <span
-                                key={tech}
-                                className="
-                                    px-2 py-1 
-                                    text-xs s
-                                text-zinc-400
-                            border border-green-400/30
-                                    transition-colors duration-200
-                               
-                                "
-                            >
+                            <span key={tech} className="chip">
                                 {tech}
                             </span>
                         ))}
                     </div>
                 )}
-            </div>
+            </TerminalWindow>
         </div>
     );
 };
@@ -81,15 +81,15 @@ const LoadingSkeleton = () => (
         {[1, 2, 3].map((i) => (
             <div key={i} className="relative flex items-center">
                 <div className={`w-full md:w-[45%] ${i % 2 === 0 ? 'md:ml-auto md:pl-8' : 'md:mr-auto md:pr-8'}`}>
-                    <div className="backdrop-blur-sm border border-green-400/30 p-6 animate-pulse">
-                        <div className="h-6 w-24 bg-green-400/20 rounded mb-3"></div>
-                        <div className="h-6 w-48 bg-zinc-700 rounded mb-1"></div>
-                        <div className="h-4 w-32 bg-green-400/20 rounded mb-3"></div>
-                        <div className="h-16 w-full bg-zinc-700/50 rounded mb-4"></div>
+                    <div className="panel p-6 animate-pulse">
+                        <div className="h-6 w-24 bg-term-amber/20 mb-3"></div>
+                        <div className="h-6 w-48 bg-term-phosphor/10 mb-1"></div>
+                        <div className="h-4 w-32 bg-term-phosphor/20 mb-3"></div>
+                        <div className="h-16 w-full bg-term-phosphor/[0.06] mb-4"></div>
                         <div className="flex gap-2">
-                            <div className="h-6 w-16 bg-zinc-700/30 rounded"></div>
-                            <div className="h-6 w-20 bg-zinc-700/30 rounded"></div>
-                            <div className="h-6 w-14 bg-zinc-700/30 rounded"></div>
+                            <div className="h-6 w-16 bg-term-phosphor/[0.06]"></div>
+                            <div className="h-6 w-20 bg-term-phosphor/[0.06]"></div>
+                            <div className="h-6 w-14 bg-term-phosphor/[0.06]"></div>
                         </div>
                     </div>
                 </div>
@@ -130,44 +130,33 @@ export const Experience = () => {
     }, []);
 
     return (
-        <section id="experience" className="relative min-h-screen bg-zinc-950 py-20">
-            {/* Grid Background */}
-            <div
-                className="
-                absolute inset-0
-            bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#09090b_1px)] bg-[size:20px_20px]
-                "
-            />
+        <section id="experience" className="relative min-h-screen bg-term-void py-20">
+            <div className="absolute inset-0 grid-bg" />
             <div className="relative z-10 max-w-6xl mx-auto px-4">
-                {/* Section Title */}
-                <h2 className="text-4xl font-bold mb-16 text-green-400 text-center">
-                    Experience
-                </h2>
+                <SectionHeading command="git log --career" label="Experience" className="mb-16" />
 
-                {/* Loading State */}
                 {isLoading && <LoadingSkeleton />}
 
-                {/* Error State */}
                 {error && !isLoading && (
                     <div className="text-center py-12">
-                        <p className="text-red-400 font-mono">{error}</p>
+                        <p className="text-term-magenta font-mono">
+                            <span className="text-term-magenta/60">! </span>
+                            {error}
+                        </p>
                     </div>
                 )}
 
-                {/* Timeline Container */}
                 {!isLoading && !error && experiences.length > 0 && (
                     <div className="relative">
-                        {/* Vertical Line - Center on desktop, Right on mobile */}
                         <div className="
-                            absolute 
-                            right-4 md:right-auto md:left-1/2 
-                            top-0 bottom-0 
-                            w-0.5 
-                            bg-gradient-to-b from-green-400 via-green-400/50 to-transparent
+                            absolute
+                            right-4 md:right-auto md:left-1/2
+                            top-0 bottom-0
+                            w-0.5
+                            bg-gradient-to-b from-term-phosphor via-term-phosphor/50 to-transparent
                             md:-translate-x-1/2
                         " />
 
-                        {/* Experience Items */}
                         <div className="space-y-12">
                             {experiences.map((experience, index) => {
                                 const isLeft = index % 2 === 0;
@@ -177,45 +166,44 @@ export const Experience = () => {
                                         key={index}
                                         className="relative flex items-center"
                                     >
-                                        {/* Timeline Node - Right on mobile, Center on desktop */}
                                         <div className="
-                                            absolute 
+                                            absolute
                                             right-2 md:right-auto md:left-1/2
 
-                                            w-4 h-4 
-                                            bg-zinc-950 
-                                            border-2 border-green-400 
+                                            w-4 h-4
+                                            bg-term-void
+                                            border-2 border-term-phosphor
                                             rounded-full
                                             md:-translate-x-1/2
                                             z-10
-                                            
+                                            shadow-glow-sm
+
                                             before:absolute before:inset-1
-                                            before:bg-green-400 before:rounded-full
+                                            before:bg-term-phosphor before:rounded-full
                                             before:opacity-50
-                                            
+
                                             after:absolute after:-inset-1
-                                            after:border after:border-green-400/30
+                                            after:border after:border-term-phosphor/30
                                             after:rounded-full
                                             after:animate-ping
                                             after:opacity-0
                                             hover:after:opacity-100
                                         " />
 
-                                        {/* Card Container - Always on left for mobile */}
                                         <div className="w-full pr-12 md:pr-0">
-                                            {/* Desktop: Alternating layout */}
                                             <div className="hidden md:block">
                                                 <ExperienceCard
                                                     experience={experience}
                                                     isLeft={isLeft}
+                                                    isHead={index === 0}
                                                 />
                                             </div>
 
-                                            {/* Mobile: Same card style as desktop, always left */}
                                             <div className="block md:hidden">
                                                 <ExperienceCard
                                                     experience={experience}
                                                     isLeft={true}
+                                                    isHead={index === 0}
                                                 />
                                             </div>
                                         </div>

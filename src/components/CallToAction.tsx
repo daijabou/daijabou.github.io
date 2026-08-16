@@ -1,6 +1,8 @@
 import { useState } from "react";
 import useWeb3Forms from "@web3forms/react";
 import { Typewriter } from "./Typewriter";
+import { TerminalWindow } from "./ui/TerminalWindow";
+import { SectionHeading } from "./ui/SectionHeading";
 import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
 export const CallToAction = () => {
@@ -50,168 +52,147 @@ export const CallToAction = () => {
     return (
         <section
             id="contact"
-            className="relative min-h-screen bg-zinc-950 py-20 px-4"
+            className="relative min-h-screen bg-term-void py-20 px-4"
         >
-            {/* Background pattern */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]" />
+            <div className="absolute inset-0 grid-bg" />
 
             <div className="relative z-10 max-w-4xl mx-auto">
-                {/* Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-4xl md:text-6xl font-bold mb-4">
+                    <SectionHeading command="./contact.sh" label="Contact" className="mb-4" />
+                    <p className="text-lg md:text-xl mb-6 font-mono">
+                        <span className="text-term-phosphor/50">&gt;&nbsp;</span>
                         <Typewriter
-                            sentences={["Let's Work Together", "Get In Touch"]}
+                            sentences={["Let's work together", "Get in touch"]}
                             typingSpeed={80}
                             deletingSpeed={50}
                             delay={3000}
                             loop={true}
                         />
-                    </h2>
-                    <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto">
+                    </p>
+                    <p className="text-term-text text-base md:text-lg max-w-2xl mx-auto font-mono">
                         Have a project in mind or want to collaborate? I'd love
                         to hear from you. Drop me a message and let's create
                         something amazing together.
                     </p>
                 </div>
 
-                {/* Form Container */}
-                <div className="relative">
-                    {/* Glowing border effect */}
+                <div className="relative group">
+                    <div className="absolute -inset-px bg-gradient-to-r from-term-phosphor/0 via-term-phosphor/40 to-term-phosphor/0 opacity-0 blur-sm transition-opacity duration-500 group-focus-within:opacity-100" />
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className="relative  backdrop-blur-sm border border-green-800 p-8 md:p-12"
+                    <TerminalWindow
+                        title="~/contact/message.txt"
+                        className="relative"
+                        bodyClassName="p-8 md:p-12"
                     >
-                        {/* Success Message */}
-                        {isSuccess && (
-                            <div className="mb-8 p-4 bg-green-400/10 border border-green-400/30 flex items-center gap-3">
-                                <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0" />
-                                <p className="text-green-400">
-                                    Thank you! Your message has been sent
-                                    successfully. I'll get back to you soon.
-                                </p>
-                            </div>
-                        )}
+                        <form onSubmit={handleSubmit}>
+                            {isSuccess && (
+                                <div className="mb-8 p-4 bg-term-phosphor/10 border border-term-phosphor/30 flex items-center gap-3">
+                                    <CheckCircle className="w-6 h-6 text-term-phosphor flex-shrink-0" />
+                                    <p className="text-term-phosphor font-mono text-sm">
+                                        Message sent. I'll get back to you soon.
+                                    </p>
+                                </div>
+                            )}
 
-                        {/* Error Message */}
-                        {isError && (
-                            <div className="mb-8 p-4 bg-red-400/10 border border-red-400/30 flex items-center gap-3">
-                                <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0" />
-                                <p className="text-red-400">
-                                    Oops! Something went wrong. Please try again
-                                    later.
-                                </p>
-                            </div>
-                        )}
+                            {isError && (
+                                <div className="mb-8 p-4 bg-term-magenta/10 border border-term-magenta/30 flex items-center gap-3">
+                                    <AlertCircle className="w-6 h-6 text-term-magenta flex-shrink-0" />
+                                    <p className="text-term-magenta font-mono text-sm">
+                                        Send failed. Check your connection and try again.
+                                    </p>
+                                </div>
+                            )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            {/* Name Input */}
-                            <div className="group">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div className="group/field">
+                                    <label
+                                        htmlFor="name"
+                                        className="block text-term-phosphor/60 text-sm font-ui mb-2 group-focus-within/field:text-term-phosphor transition-colors"
+                                    >
+                                        --name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="john doe"
+                                        className="input-term"
+                                    />
+                                </div>
+
+                                <div className="group/field">
+                                    <label
+                                        htmlFor="email"
+                                        className="block text-term-phosphor/60 text-sm font-ui mb-2 group-focus-within/field:text-term-phosphor transition-colors"
+                                    >
+                                        --email
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="john@example.com"
+                                        className="input-term"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="group/field mb-8">
                                 <label
-                                    htmlFor="name"
-                                    className="block text-zinc-400 text-sm font-mono mb-2 group-focus-within:text-green-400 transition-colors"
+                                    htmlFor="message"
+                                    className="block text-term-phosphor/60 text-sm font-ui mb-2 group-focus-within/field:text-term-phosphor transition-colors"
                                 >
-                                    Your Name
+                                    --message
                                 </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={formData.name}
+                                <textarea
+                                    id="message"
+                                    name="message"
+                                    value={formData.message}
                                     onChange={handleChange}
                                     required
-                                    placeholder="John Doe"
-                                    className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 
-                                             text-white placeholder-zinc-500 
-                                             focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400/50
-                                             transition-all duration-300"
+                                    rows={5}
+                                    placeholder="tell me about your project..."
+                                    className="input-term resize-none"
                                 />
                             </div>
 
-                            {/* Email Input */}
-                            <div className="group">
-                                <label
-                                    htmlFor="email"
-                                    className="block text-zinc-400 text-sm font-mono mb-2 group-focus-within:text-green-400 transition-colors"
+                            <div className="flex justify-center">
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="btn-term-solid w-full md:w-auto"
                                 >
-                                    Your Email
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="john@example.com"
-                                    className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 
-                                             text-white placeholder-zinc-500 
-                                             focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400/50
-                                             transition-all duration-300"
-                                />
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            sending...
+                                        </>
+                                    ) : (
+                                        <>
+                                            $ send --now
+                                            <Send className="w-5 h-5" />
+                                        </>
+                                    )}
+                                </button>
                             </div>
-                        </div>
-
-                        {/* Message Textarea */}
-                        <div className="group mb-8">
-                            <label
-                                htmlFor="message"
-                                className="block text-zinc-400 text-sm font-mono mb-2 group-focus-within:text-green-400 transition-colors"
-                            >
-                                Your Message
-                            </label>
-                            <textarea
-                                id="message"
-                                name="message"
-                                value={formData.message}
-                                onChange={handleChange}
-                                required
-                                rows={5}
-                                placeholder="Tell me about your project..."
-                                className="w-full px-4 py-3 bg-zinc-800/50 border border-zinc-700 
-                                         text-white placeholder-zinc-500 resize-none
-                                         focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400/50
-                                         transition-all duration-300"
-                            />
-                        </div>
-
-                        {/* Submit Button */}
-                        <div className="flex justify-center">
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full md:w-auto px-8 py-4 bg-green-400 text-zinc-900 font-bold font-mono
-                                    flex items-center justify-center gap-3
-                                     hover:bg-green-300 hover:shadow-lg hover:shadow-green-400/25
-                                     disabled:opacity-50 disabled:cursor-not-allowed
-                                     transition-all duration-300 group"
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                        Sending...
-                                    </>
-                                ) : (
-                                    <>
-                                        Send Message
-                                        <Send />
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </form>
+                        </form>
+                    </TerminalWindow>
                 </div>
 
-                {/* Alternative Contact */}
                 <div className="mt-12 text-center">
-                    <p className="text-zinc-500 text-sm">
+                    <p className="text-term-text text-sm font-mono">
                         Or reach out directly at{" "}
                         <a
                             href="mailto:michaelendaya3@gmail.com"
-                            className="text-green-400 hover:underline"
+                            className="text-term-phosphor hover:text-glow hover:underline transition-all"
                         >
                             michaelendaya3@gmail.com
-
                         </a>
                     </p>
                 </div>
