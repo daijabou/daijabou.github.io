@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Terminal, Wifi, Volume2, Cpu } from 'lucide-react';
+import type { ChatWindowState } from './Chatbot';
 
 const SECTIONS = [
     { id: 'hero', path: '~/', label: 'home' },
@@ -11,7 +12,12 @@ const SECTIONS = [
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-export const StatusBar = () => {
+interface StatusBarProps {
+    chat: ChatWindowState;
+    onChatChange: (state: ChatWindowState) => void;
+}
+
+export const StatusBar = ({ chat, onChatChange }: StatusBarProps) => {
     const [activeId, setActiveId] = useState('hero');
     const [progress, setProgress] = useState(0);
     const [clock, setClock] = useState('');
@@ -87,6 +93,20 @@ export const StatusBar = () => {
                     );
                 })}
             </nav>
+
+            {chat !== 'closed' && (
+                <button
+                    onClick={() => onChatChange(chat === 'open' ? 'minimized' : 'open')}
+                    aria-label={chat === 'open' ? 'Minimize assistant' : 'Restore assistant'}
+                    className={`flex flex-shrink-0 items-center gap-1.5 border px-2 transition-colors ${chat === 'open'
+                            ? 'border-term-phosphor/60 bg-term-phosphor/20 text-term-phosphor shadow-glow-sm'
+                            : 'border-term-phosphor/15 text-term-phosphor/50 hover:border-term-phosphor/40 hover:text-term-phosphor'
+                        }`}
+                >
+                    <Terminal className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                    <span className="hidden sm:inline">assistant</span>
+                </button>
+            )}
 
             <div className="flex flex-shrink-0 items-center gap-3 border border-term-phosphor/15 px-2 tabular-nums">
                 <span className="hidden items-center gap-1 sm:flex" title="Scroll position">

@@ -1,19 +1,38 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Send, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence, useDragControls, useMotionValue } from 'framer-motion';
+import { Terminal, Send, Loader2, Minus, Square, X } from 'lucide-react';
+
+export type ChatWindowState = 'closed' | 'open' | 'minimized';
 
 interface Message {
     role: 'user' | 'assistant';
     content: string;
 }
 
-export const Chatbot = () => {
-    const [isOpen, setIsOpen] = useState(false);
+interface ChatbotProps {
+    state: ChatWindowState;
+    onChange: (state: ChatWindowState) => void;
+}
+
+export const Chatbot = ({ state, onChange }: ChatbotProps) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isStreaming, setIsStreaming] = useState(false);
+    const [isMaximized, setIsMaximized] = useState(false);
     const bottomRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const constraintsRef = useRef<HTMLDivElement>(null);
+    const dragControls = useDragControls();
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const isOpen = state === 'open';
+
+    const toggleMaximize = () => {
+        x.set(0);
+        y.set(0);
+        setIsMaximized((v) => !v);
+    };
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,7 +56,7 @@ export const Chatbot = () => {
 
         if (input.trim() === '/exit') {
             setInput('');
-            setIsOpen(false);
+            onChange('closed');
             return;
         }
 
@@ -50,10 +69,9 @@ export const Chatbot = () => {
         const userMessage: Message = { role: 'user', content: input.trim() };
         const nextMessages = [...messages, userMessage];
 
-        // Batch: append user message + empty assistant placeholder in one update
         setMessages([...nextMessages, { role: 'assistant', content: '' }]);
         setInput('');
-         setIsStreaming(true);
+        setIsStreaming(true);
 
         let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
 
@@ -78,7 +96,7 @@ export const Chatbot = () => {
 
                 buffer += decoder.decode(value, { stream: true });
                 const lines = buffer.split('\n');
-                buffer = lines.pop() ?? ''; // keep incomplete trailing line
+                buffer = lines.pop() ?? '';
 
                 for (const line of lines) {
                     if (!line.startsWith('data: ')) continue;
@@ -109,37 +127,86 @@ export const Chatbot = () => {
                 return copy;
             });
         } finally {
-            reader?.cancel().catch(() => {});
+            reader?.cancel().catch(() => { });
             setIsStreaming(false);
         }
     };
 
     return (
         <>
-            {!isOpen && (
+            {state === 'closed' && (
                 <button
-                    onClick={() => setIsOpen(true)}
-                    aria-label="Open chat"
+                    onClick={() => onChange('open')}
+                    aria-label="Open assistant"
                     className="btn-term fixed bottom-12 right-6 z-[95] w-12 h-12 !p-0"
                 >
                     <Terminal className="w-5 h-5" />
                 </button>
             )}
 
+            <div
+                ref={constraintsRef}
+                aria-hidden="true"
+                className="pointer-events-none fixed inset-x-0 top-0 bottom-9 z-0"
+            />
+
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
-                        transition={{ type: 'tween', duration: 0.25, ease: 'easeInOut' }}
-                        className="fixed top-0 right-0 h-screen w-full md:w-1/3
-                                   bg-term-panel/95 backdrop-blur-sm border-l border-term-phosphor/40
-                                   flex flex-col z-[95] font-mono pb-9"
+                        role="dialog"
+                        aria-label="Portfolio assistant"
+                        initial={{ opacity: 0, scale: 0.92 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ type: 'tween', duration: 0.18, ease: 'easeOut' }}
+                        style={{ x, y, transformOrigin: 'bottom right' }}
+                        drag={!isMaximized}
+                        dragListener={false}
+                        dragControls={dragControls}
+                        dragConstraints={constraintsRef}
+                        dragMomentum={false}
+                        dragElastic={0}
+                        className={`panel fixed z-[95] flex flex-col font-mono shadow-glow-lg ${isMaximized
+                            ? 'inset-x-2 top-2 bottom-11'
+                            : 'bottom-11 right-4 w-[calc(100vw-2rem)] max-w-md h-[min(70vh,560px)]'
+                            }`}
                     >
-                        <div className="panel-bar flex-shrink-0 !py-3">
-                            <Terminal className="w-4 h-4 text-term-phosphor" />
-                            <span className="text-term-phosphor text-sm">michael@portfolio:~$</span>
+                        <div
+                            onPointerDown={(e) => {
+                                if (!isMaximized) dragControls.start(e);
+                            }}
+                            className={`panel-bar flex-shrink-0 !py-2 select-none ${isMaximized ? '' : 'cursor-move touch-none'
+                                }`}
+                        >
+                            <Terminal className="w-4 h-4 flex-shrink-0 text-term-phosphor" aria-hidden="true" />
+                            <span className="truncate text-term-phosphor">michael@portfolio: ~</span>
+
+                            <div
+                                onPointerDown={(e) => e.stopPropagation()}
+                                className="ml-auto flex flex-shrink-0 items-center gap-1"
+                            >
+                                <button
+                                    onClick={() => onChange('minimized')}
+                                    aria-label="Minimize"
+                                    className="flex h-5 w-5 items-center justify-center border border-term-phosphor/25 text-term-phosphor/70 transition-colors hover:bg-term-phosphor/20 hover:text-term-phosphor"
+                                >
+                                    <Minus className="h-3 w-3" />
+                                </button>
+                                <button
+                                    onClick={toggleMaximize}
+                                    aria-label={isMaximized ? 'Restore' : 'Maximize'}
+                                    className="flex h-5 w-5 items-center justify-center border border-term-phosphor/25 text-term-phosphor/70 transition-colors hover:bg-term-phosphor/20 hover:text-term-phosphor"
+                                >
+                                    <Square className="h-2.5 w-2.5" />
+                                </button>
+                                <button
+                                    onClick={() => onChange('closed')}
+                                    aria-label="Close"
+                                    className="flex h-5 w-5 items-center justify-center border border-term-phosphor/25 text-term-phosphor/70 transition-colors hover:bg-term-magenta hover:text-term-void"
+                                >
+                                    <X className="h-3 w-3" />
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-4 space-y-4 text-sm">
