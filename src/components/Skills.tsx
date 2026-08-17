@@ -1,23 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Typewriter } from './Typewriter';
 import { SectionHeading } from './ui/SectionHeading';
-
-type SkillCategory = 'Languages, Frameworks & Development' | 'AI/LLM Tools' | 'Cloud & DevOps';
-
-const skillsData: Record<SkillCategory, string[]> = {
-    'Languages, Frameworks & Development': [
-        'TypeScript, JavaScript, React, Next.js, Vue.js, Node.js, .NET, NestJS, PostgreSQL, SQL Server, Redis, MongoDb'
-    ],
-    'AI/LLM Tools': [
-        'OpenAI API, AutoGen, LangChain, Pinecone'
-    ],
-    'Cloud & DevOps': [
-        'Amazon web services, Docker, GitHub Actions, Gitlab CI/CD'
-    ]
-};
+import { skillCategories, skills, type SkillCategory } from '../lib/resumeData';
 
 export const Skills = () => {
-    const [selectedCategory, setSelectedCategory] = useState<SkillCategory>('Languages, Frameworks & Development');
+    const [selectedCategory, setSelectedCategory] = useState<SkillCategory>(skillCategories[0]);
+
+    const sentences = useMemo(() => [skills[selectedCategory].join(', ')], [selectedCategory]);
     return (
         <section id="skills" className='relative h-screen bg-term-void'>
             <div className="flex justify-center items-center h-screen grid-bg p-4">
@@ -25,7 +14,7 @@ export const Skills = () => {
                     <SectionHeading command="ls ./skills" label="Skills" className="mb-8" />
 
                     <div className="flex flex-wrap justify-center gap-4 mb-8">
-                        {(Object.keys(skillsData) as SkillCategory[]).map((category) => (
+                        {skillCategories.map((category) => (
                             <button
                                 key={category}
                                 onClick={() => setSelectedCategory(category)}
@@ -45,7 +34,7 @@ export const Skills = () => {
                         <p className="text-lg md:text-2xl font-mono">
                             <Typewriter
                                 key={selectedCategory}
-                                sentences={skillsData[selectedCategory]}
+                                sentences={sentences}
                                 typingSpeed={50}
                                 deletingSpeed={0}
                                 delay={1000}

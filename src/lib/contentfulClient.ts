@@ -1,6 +1,7 @@
 import { createClient, type Entry, type EntrySkeletonType } from 'contentful';
 import { documentToPlainTextString } from '@contentful/rich-text-plain-text-renderer';
 import type { Document } from '@contentful/rich-text-types';
+import { experience as fallbackExperienceData } from './resumeData';
 
 // Define the fields for Experience content type (description is rich text from Contentful)
 export interface ExperienceFields {
@@ -28,37 +29,6 @@ export interface ExperienceSkeleton extends EntrySkeletonType {
 }
 
 export type ExperienceEntry = Entry<ExperienceSkeleton, undefined, string>;
-
-const fallbackExperienceData: ExperienceFields[] = [
-    {
-        company: "TSA Group",
-        role: "Software Engineer",
-        duration: "2025 - Present",
-        description: "Leading development of scalable web applications and mentoring junior developers. Architecting solutions using modern tech stack and best practices.",
-        technologies: ["React", "TypeScript", "Node.js", "AWS"]
-    },
-    {
-        company: "Asurion",
-        role: "Software Engineer",
-        duration: "2023 - 2025",
-        description: "Developed and maintained full-stack applications. Collaborated with cross-functional teams to deliver high-quality software solutions.",
-        technologies: ["Vue.js", "Python", "PostgreSQL", "Docker"]
-    },
-    {
-        company: "Realtair",
-        role: "Software Engineer",
-        duration: "2022 - 2025",
-        description: "Built responsive user interfaces and interactive web experiences. Improved website performance and user engagement metrics.",
-        technologies: ["JavaScript", "React", "CSS", "Figma"]
-    },
-    {
-        company: "Startup Labs",
-        role: "Front-end engineer",
-        duration: "2018 - 2019",
-        description: "Started development career working on various client projects. Gained foundational skills in web development and agile methodologies.",
-        technologies: ["HTML", "CSS", "JavaScript", "Git"]
-    }
-];
 
 const isContentfulConfigured = () => {
     return (

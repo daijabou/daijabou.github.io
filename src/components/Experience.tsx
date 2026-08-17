@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getExperienceEntries, type ExperienceFields } from '../lib/contentfulClient';
 import { SectionHeading } from './ui/SectionHeading';
 import { TerminalWindow } from './ui/TerminalWindow';
+import { identity } from '../lib/resumeData';
 
 interface ExperienceItem {
     company: string;
@@ -43,7 +44,7 @@ const ExperienceCard = ({ experience, isLeft, isHead }: ExperienceCardProps) => 
                 <div className="font-ui text-xs mb-4 space-y-0.5">
                     <p className="text-term-text">
                         <span className="text-term-phosphor/40">Author:&nbsp;</span>
-                        Michael Endaya &lt;michaelendaya3@gmail.com&gt;
+                        {identity.name} &lt;{identity.email}&gt;
                     </p>
                     <p className="text-term-text">
                         <span className="text-term-phosphor/40">Date:&nbsp;&nbsp;&nbsp;</span>

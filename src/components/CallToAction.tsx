@@ -4,6 +4,7 @@ import { Typewriter } from "./Typewriter";
 import { TerminalWindow } from "./ui/TerminalWindow";
 import { SectionHeading } from "./ui/SectionHeading";
 import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { identity } from "../lib/resumeData";
 
 export const CallToAction = () => {
     const [formData, setFormData] = useState({
@@ -189,10 +190,10 @@ export const CallToAction = () => {
                     <p className="text-term-text text-sm font-mono">
                         Or reach out directly at{" "}
                         <a
-                            href="mailto:michaelendaya3@gmail.com"
+                            href={`mailto:${identity.email}`}
                             className="text-term-phosphor hover:text-glow hover:underline transition-all"
                         >
-                            michaelendaya3@gmail.com
+                            {identity.email}
                         </a>
                     </p>
                 </div>

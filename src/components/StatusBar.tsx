@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Terminal, Wifi, Volume2, Cpu } from 'lucide-react';
-import type { ChatWindowState } from './Chatbot';
-
-const SECTIONS = [
-    { id: 'hero', path: '~/', label: 'home' },
-    { id: 'about', path: '~/about', label: 'about' },
-    { id: 'skills', path: '~/skills', label: 'skills' },
-    { id: 'experience', path: '~/experience', label: 'experience' },
-    { id: 'contact', path: '~/contact', label: 'contact' },
-];
+import type { ChatWindowState } from './TerminalConsole';
+import { sections as SECTIONS } from '../lib/resumeData';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -97,14 +90,14 @@ export const StatusBar = ({ chat, onChatChange }: StatusBarProps) => {
             {chat !== 'closed' && (
                 <button
                     onClick={() => onChatChange(chat === 'open' ? 'minimized' : 'open')}
-                    aria-label={chat === 'open' ? 'Minimize assistant' : 'Restore assistant'}
+                    aria-label={chat === 'open' ? 'Minimize terminal' : 'Restore terminal'}
                     className={`flex flex-shrink-0 items-center gap-1.5 border px-2 transition-colors ${chat === 'open'
                             ? 'border-term-phosphor/60 bg-term-phosphor/20 text-term-phosphor shadow-glow-sm'
                             : 'border-term-phosphor/15 text-term-phosphor/50 hover:border-term-phosphor/40 hover:text-term-phosphor'
                         }`}
                 >
                     <Terminal className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-                    <span className="hidden sm:inline">assistant</span>
+                    <span className="hidden sm:inline">terminal</span>
                 </button>
             )}
 

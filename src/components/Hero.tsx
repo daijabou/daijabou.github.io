@@ -1,5 +1,6 @@
 import { Typewriter } from './Typewriter';
 import { GlitchText } from './effects/GlitchText';
+import { taglines } from '../lib/resumeData';
 
 export const Hero = () => {
     return (
@@ -18,12 +19,7 @@ export const Hero = () => {
 
                         <p className="text-base mt-4 md:text-3xl font-mono">
                             <Typewriter
-                                sentences={[
-                                    "I'm a software developer.",
-                                    "I build innovative applications.",
-                                    "I love solving complex problems.",
-                                    "I'm passionate about tech."
-                                ]}
+                                sentences={taglines}
                                 typingSpeed={100}
                                 deletingSpeed={50}
                                 delay={1500}
