@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useDragControls, useMotionValue } from 'framer-motion';
 import { Terminal, CornerDownLeft, Loader2, Minus, Square, X } from 'lucide-react';
+import { Prompt } from './ui/Prompt';
 import {
     completeLine,
     longestCommonPrefix,
@@ -84,10 +85,10 @@ async function streamChatReply(
 }
 
 const toneClass = (tone?: 'dim' | 'bright' | 'accent') => {
-    if (tone === 'dim') return 'text-term-text/50';
+    if (tone === 'dim') return 'text-ink-hint';
     if (tone === 'bright') return 'text-term-bright';
     if (tone === 'accent') return 'text-term-phosphor';
-    return 'text-term-text';
+    return 'text-ink-body';
 };
 
 const OutputLines = ({ lines, isError }: { lines: OutputLine[]; isError?: boolean }) => (
@@ -98,8 +99,8 @@ const OutputLines = ({ lines, isError }: { lines: OutputLine[]; isError?: boolea
             if (line.kind === 'kv') {
                 return (
                     <div key={i} className="flex gap-3">
-                        <span className="w-20 flex-shrink-0 text-term-phosphor/70 sm:w-24">{line.key}</span>
-                        <span className="min-w-0 break-words text-term-text">{line.value}</span>
+                        <span className="w-20 flex-shrink-0 text-ink-label sm:w-24">{line.key}</span>
+                        <span className="min-w-0 break-words text-ink-body">{line.value}</span>
                     </div>
                 );
             }
@@ -111,7 +112,7 @@ const OutputLines = ({ lines, isError }: { lines: OutputLine[]; isError?: boolea
                             href={line.href}
                             target={line.href.startsWith('mailto:') ? undefined : '_blank'}
                             rel="noreferrer"
-                            className="text-term-phosphor underline decoration-term-phosphor/40 underline-offset-2
+                            className="text-term-phosphor underline decoration-edge underline-offset-2
                                        transition-all hover:text-glow hover:decoration-term-phosphor"
                         >
                             {line.label}
@@ -212,7 +213,20 @@ export const TerminalConsole = ({ state, onChange }: TerminalConsoleProps) => {
                 break;
             case 'scroll': {
                 const el = document.getElementById(action.sectionId);
-                el?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+                if (!el) break;
+                const top = el.getBoundingClientRect().top + window.scrollY;
+                if (prefersReducedMotion()) {
+                    window.scrollTo(0, top);
+                    break;
+                }
+                const before = window.scrollY;
+                window.scrollTo({ top, behavior: 'smooth' });
+                // Smooth scrolling fails silently when system animations are off; jump instead.
+                window.setTimeout(() => {
+                    if (Math.abs(window.scrollY - before) < 2 && Math.abs(top - before) > 2) {
+                        window.scrollTo(0, top);
+                    }
+                }, 250);
                 break;
             }
         }
@@ -389,20 +403,10 @@ export const TerminalConsole = ({ state, onChange }: TerminalConsoleProps) => {
 
     return (
         <>
-            {!isOpen && (
-                <button
-                    onClick={() => onChange('open')}
-                    aria-label="Open terminal"
-                    className="btn-term fixed bottom-12 right-6 z-[95] w-12 h-12 !p-0"
-                >
-                    <Terminal className="w-5 h-5" />
-                </button>
-            )}
-
             <div
                 ref={constraintsRef}
                 aria-hidden="true"
-                className="pointer-events-none fixed inset-x-0 top-0 bottom-9 z-0"
+                className="pointer-events-none fixed inset-x-0 top-0 bottom-[var(--statusbar-h)] z-0"
             />
 
             <AnimatePresence>
@@ -422,8 +426,8 @@ export const TerminalConsole = ({ state, onChange }: TerminalConsoleProps) => {
                         dragMomentum={false}
                         dragElastic={0}
                         className={`panel fixed z-[95] flex flex-col font-mono shadow-glow-lg ${isMaximized
-                            ? 'inset-x-2 top-2 bottom-11'
-                            : 'bottom-11 right-4 w-[calc(100vw-2rem)] max-w-md h-[min(70vh,560px)]'
+                            ? 'inset-x-2 top-2 bottom-[calc(var(--statusbar-h)+0.5rem)]'
+                            : 'bottom-[calc(var(--statusbar-h)+0.5rem)] right-4 w-[calc(100vw-2rem)] max-w-md h-[min(70vh,560px)]'
                             }`}
                     >
                         <div
@@ -437,33 +441,33 @@ export const TerminalConsole = ({ state, onChange }: TerminalConsoleProps) => {
                             <span className="truncate text-term-phosphor">michael@portfolio: ~</span>
 
                             {isChat && (
-                                <span className="flex-shrink-0 border border-term-amber/50 px-1.5 text-[10px] uppercase tracking-wider text-term-amber">
+                                <span className="flex-shrink-0 border border-term-amber/50 px-1.5 text-meta text-term-amber">
                                     ask
                                 </span>
                             )}
 
                             <div
                                 onPointerDown={(e) => e.stopPropagation()}
-                                className="ml-auto flex flex-shrink-0 items-center gap-1"
+                                className="ml-auto flex flex-shrink-0 items-center gap-2"
                             >
                                 <button
                                     onClick={() => onChange('minimized')}
                                     aria-label="Minimize"
-                                    className="flex h-5 w-5 items-center justify-center border border-term-phosphor/25 text-term-phosphor/70 transition-colors hover:bg-term-phosphor/20 hover:text-term-phosphor"
+                                    className="hit-44 flex h-8 w-8 items-center justify-center border border-edge text-ink-label transition-colors hover:bg-term-phosphor/20 hover:text-term-phosphor"
                                 >
                                     <Minus className="h-3 w-3" />
                                 </button>
                                 <button
                                     onClick={toggleMaximize}
                                     aria-label={isMaximized ? 'Restore' : 'Maximize'}
-                                    className="flex h-5 w-5 items-center justify-center border border-term-phosphor/25 text-term-phosphor/70 transition-colors hover:bg-term-phosphor/20 hover:text-term-phosphor"
+                                    className="hit-44 flex h-8 w-8 items-center justify-center border border-edge text-ink-label transition-colors hover:bg-term-phosphor/20 hover:text-term-phosphor"
                                 >
                                     <Square className="h-2.5 w-2.5" />
                                 </button>
                                 <button
                                     onClick={() => onChange('closed')}
                                     aria-label="Close"
-                                    className="flex h-5 w-5 items-center justify-center border border-term-phosphor/25 text-term-phosphor/70 transition-colors hover:bg-term-magenta hover:text-term-void"
+                                    className="hit-44 flex h-8 w-8 items-center justify-center border border-edge text-ink-label transition-colors hover:bg-term-phosphor hover:text-term-void"
                                 >
                                     <X className="h-3 w-3" />
                                 </button>
@@ -480,15 +484,15 @@ export const TerminalConsole = ({ state, onChange }: TerminalConsoleProps) => {
                                 if (entry.kind === 'input') {
                                     return (
                                         <div key={entry.id} className="flex gap-2">
-                                            <span className="flex-shrink-0 text-term-phosphor/40">~$</span>
-                                            <span className="min-w-0 break-words text-term-bright">{entry.text}</span>
+                                            <Prompt sigil="~$" className="text-sm" />
+                                            <span className="min-w-0 break-words text-ink-strong">{entry.text}</span>
                                         </div>
                                     );
                                 }
 
                                 if (entry.kind === 'system') {
                                     return (
-                                        <div key={entry.id} className="text-xs text-term-amber/70">
+                                        <div key={entry.id} className="text-meta text-ink-hint">
                                             {entry.text}
                                         </div>
                                     );
@@ -497,7 +501,7 @@ export const TerminalConsole = ({ state, onChange }: TerminalConsoleProps) => {
                                 if (entry.kind === 'chat-user') {
                                     return (
                                         <div key={entry.id} className="flex gap-2">
-                                            <span className="flex-shrink-0 text-term-amber/70">{'>'}</span>
+                                            <Prompt sigil=">" mode="chat" className="text-sm" />
                                             <span className="min-w-0 break-words text-term-bright">{entry.text}</span>
                                         </div>
                                     );
@@ -506,7 +510,7 @@ export const TerminalConsole = ({ state, onChange }: TerminalConsoleProps) => {
                                 if (entry.kind === 'chat-reply') {
                                     return (
                                         <div key={entry.id} className="flex gap-2">
-                                            <span className="flex-shrink-0 text-term-phosphor/60">ai$</span>
+                                            <Prompt sigil="ai$" mode="chat" className="text-sm" />
                                             <span className="min-w-0 break-words text-term-phosphor">
                                                 {entry.text}
                                                 {entry.id === streamingId && (
@@ -528,14 +532,13 @@ export const TerminalConsole = ({ state, onChange }: TerminalConsoleProps) => {
 
                         <form
                             onSubmit={handleSubmit}
-                            className="border-t border-term-phosphor/30 px-4 py-3 flex items-center gap-3 flex-shrink-0"
+                            className="flex flex-shrink-0 items-center gap-3 border-t border-edge px-4 py-3"
                         >
-                            <span
-                                className={`flex-shrink-0 ${isChat ? 'text-term-amber' : 'text-term-phosphor'}`}
-                                aria-hidden="true"
-                            >
-                                {isChat ? 'ask>' : '~$'}
-                            </span>
+                            <Prompt
+                                sigil={isChat ? 'ask>' : '~$'}
+                                mode={isChat ? 'chat' : 'shell'}
+                                className="text-sm"
+                            />
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -548,14 +551,15 @@ export const TerminalConsole = ({ state, onChange }: TerminalConsoleProps) => {
                                 autoCapitalize="off"
                                 spellCheck={false}
                                 placeholder={isChat ? 'ask a question...' : "type 'help'..."}
-                                className="flex-1 bg-transparent text-term-phosphor placeholder-term-phosphor/30
-                                           focus:outline-none text-sm caret-term-phosphor
+                                className="min-h-[44px] flex-1 self-stretch border-b border-transparent bg-transparent
+                                           py-2 text-chrome text-term-phosphor caret-term-phosphor
+                                           placeholder:text-ink-hint focus:border-term-phosphor
                                            disabled:opacity-50"
                             />
                             <button
                                 type="submit"
                                 disabled={isStreaming || !input.trim()}
-                                className="text-term-phosphor disabled:opacity-30 hover:text-glow transition-all flex-shrink-0"
+                                className="hit-44 flex-shrink-0 text-term-phosphor transition-all hover:text-glow disabled:opacity-30"
                                 aria-label={isChat ? 'Send question' : 'Run command'}
                             >
                                 {isStreaming

@@ -1,17 +1,19 @@
 import { useState } from "react";
 import useWeb3Forms from "@web3forms/react";
-import { Typewriter } from "./Typewriter";
-import { TerminalWindow } from "./ui/TerminalWindow";
+import { Section } from "./ui/Section";
 import { SectionHeading } from "./ui/SectionHeading";
+import { TerminalWindow } from "./ui/TerminalWindow";
 import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { identity } from "../lib/resumeData";
 
+/** Flag-form labels carry a plain-language name, so the accessible name reads. */
+const FIELDS = [
+    { name: "name", flag: "--name", plain: "your name", placeholder: "jane doe", type: "text" },
+    { name: "email", flag: "--email", plain: "so I can reply", placeholder: "jane@example.com", type: "email" },
+] as const;
+
 export const CallToAction = () => {
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        message: "",
-    });
+    const [formData, setFormData] = useState({ name: "", email: "", message: "" });
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [isError, setIsError] = useState(false);
@@ -26,12 +28,11 @@ export const CallToAction = () => {
             setFormData({ name: "", email: "", message: "" });
             setIsSuccess(true);
             setIsLoading(false);
-            setTimeout(() => setIsSuccess(false), 5000);
+            // No auto-dismiss: the confirmation is the reassurance.
         },
         onError: () => {
             setIsError(true);
             setIsLoading(false);
-            setTimeout(() => setIsError(false), 5000);
         },
     });
 
@@ -51,153 +52,132 @@ export const CallToAction = () => {
     };
 
     return (
-        <section
-            id="contact"
-            className="relative min-h-screen bg-term-void py-20 px-4"
-        >
-            <div className="absolute inset-0 grid-bg" />
+        <Section id="contact" label="Contact">
+            <SectionHeading command="./contact.sh" label="Contact" />
 
-            <div className="relative z-10 max-w-4xl mx-auto">
-                <div className="text-center mb-12">
-                    <SectionHeading command="./contact.sh" label="Contact" className="mb-4" />
-                    <p className="text-lg md:text-xl mb-6 font-mono">
-                        <span className="text-term-phosphor/50">&gt;&nbsp;</span>
-                        <Typewriter
-                            sentences={["Let's work together", "Get in touch"]}
-                            typingSpeed={80}
-                            deletingSpeed={50}
-                            delay={3000}
-                            loop={true}
-                        />
-                    </p>
-                    <p className="text-term-text text-base md:text-lg max-w-2xl mx-auto font-mono">
-                        Have a project in mind or want to collaborate? I'd love
-                        to hear from you. Drop me a message and let's create
-                        something amazing together.
-                    </p>
-                </div>
+            <div className="shell-output">
+                <p className="t-body mb-8">
+                    Have a project in mind or want to collaborate? I'd love to hear from
+                    you. Drop me a message and let's create something amazing together.
+                </p>
 
-                <div className="relative group">
-                    <div className="absolute -inset-px bg-gradient-to-r from-term-phosphor/0 via-term-phosphor/40 to-term-phosphor/0 opacity-0 blur-sm transition-opacity duration-500 group-focus-within:opacity-100" />
-
-                    <TerminalWindow
-                        title="~/contact/message.txt"
-                        className="relative"
-                        bodyClassName="p-8 md:p-12"
-                    >
-                        <form onSubmit={handleSubmit}>
+                <TerminalWindow title="~/contact/message.txt" bodyClassName="p-5 md:p-8">
+                    <form onSubmit={handleSubmit} noValidate={false}>
+                        <div
+                            aria-live="polite"
+                            className={isSuccess || isError ? "mb-6" : undefined}
+                        >
                             {isSuccess && (
-                                <div className="mb-8 p-4 bg-term-phosphor/10 border border-term-phosphor/30 flex items-center gap-3">
-                                    <CheckCircle className="w-6 h-6 text-term-phosphor flex-shrink-0" />
-                                    <p className="text-term-phosphor font-mono text-sm">
-                                        Message sent. I'll get back to you soon.
-                                    </p>
+                                <div className="flex items-start gap-3 border border-edge-strong bg-term-phosphor/[0.06] p-4">
+                                    <CheckCircle
+                                        className="mt-0.5 h-5 w-5 flex-shrink-0 text-term-phosphor"
+                                        aria-hidden="true"
+                                    />
+                                    <div className="font-mono text-chrome">
+                                        <p className="text-term-phosphor">exit 0 — message sent</p>
+                                        <p className="mt-1 text-ink-body">
+                                            delivered to {identity.email} · I read every message and
+                                            usually reply within a couple of days.
+                                        </p>
+                                    </div>
                                 </div>
                             )}
 
                             {isError && (
-                                <div className="mb-8 p-4 bg-term-magenta/10 border border-term-magenta/30 flex items-center gap-3">
-                                    <AlertCircle className="w-6 h-6 text-term-magenta flex-shrink-0" />
-                                    <p className="text-term-magenta font-mono text-sm">
-                                        Send failed. Check your connection and try again.
-                                    </p>
+                                <div className="flex items-start gap-3 border border-term-magenta/40 bg-term-magenta/[0.06] p-4">
+                                    <AlertCircle
+                                        className="mt-0.5 h-5 w-5 flex-shrink-0 text-term-magenta"
+                                        aria-hidden="true"
+                                    />
+                                    <div className="font-mono text-chrome">
+                                        <p className="text-term-magenta">exit 1 — send failed</p>
+                                        <p className="mt-1 text-ink-body">
+                                            Check your connection and try again, or email{" "}
+                                            <a
+                                                href={`mailto:${identity.email}`}
+                                                className="text-term-phosphor underline decoration-edge underline-offset-2 hover:decoration-term-phosphor"
+                                            >
+                                                {identity.email}
+                                            </a>{" "}
+                                            directly.
+                                        </p>
+                                    </div>
                                 </div>
                             )}
+                        </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <div className="group/field">
-                                    <label
-                                        htmlFor="name"
-                                        className="block text-term-phosphor/60 text-sm font-ui mb-2 group-focus-within/field:text-term-phosphor transition-colors"
-                                    >
-                                        --name
+                        <div className="mb-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+                            {FIELDS.map((field) => (
+                                <div key={field.name}>
+                                    <label htmlFor={field.name} className="t-label mb-2 block">
+                                        {field.flag}
+                                        <span className="ml-2 text-ink-hint">({field.plain})</span>
                                     </label>
                                     <input
-                                        type="text"
-                                        id="name"
-                                        name="name"
-                                        value={formData.name}
+                                        type={field.type}
+                                        id={field.name}
+                                        name={field.name}
+                                        value={formData[field.name]}
                                         onChange={handleChange}
                                         required
-                                        placeholder="john doe"
+                                        placeholder={field.placeholder}
                                         className="input-term"
                                     />
                                 </div>
+                            ))}
+                        </div>
 
-                                <div className="group/field">
-                                    <label
-                                        htmlFor="email"
-                                        className="block text-term-phosphor/60 text-sm font-ui mb-2 group-focus-within/field:text-term-phosphor transition-colors"
-                                    >
-                                        --email
-                                    </label>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        required
-                                        placeholder="john@example.com"
-                                        className="input-term"
-                                    />
-                                </div>
-                            </div>
+                        <div className="mb-8">
+                            <label htmlFor="message" className="t-label mb-2 block">
+                                --message
+                                <span className="ml-2 text-ink-hint">(what you need)</span>
+                            </label>
+                            <textarea
+                                id="message"
+                                name="message"
+                                value={formData.message}
+                                onChange={handleChange}
+                                required
+                                rows={5}
+                                placeholder="a role you're hiring for, or a project you want built..."
+                                className="input-term resize-y"
+                            />
+                        </div>
 
-                            <div className="group/field mb-8">
-                                <label
-                                    htmlFor="message"
-                                    className="block text-term-phosphor/60 text-sm font-ui mb-2 group-focus-within/field:text-term-phosphor transition-colors"
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="btn-term-solid"
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                                        sending...
+                                    </>
+                                ) : (
+                                    <>
+                                        $ send --now
+                                        <Send className="h-4 w-4" aria-hidden="true" />
+                                    </>
+                                )}
+                            </button>
+
+                            <p className="t-meta">
+                                all three fields required · or email{" "}
+                                <a
+                                    href={`mailto:${identity.email}`}
+                                    className="inline-flex min-h-[44px] items-center text-ink-label underline
+                                               decoration-edge underline-offset-2 transition-colors
+                                               hover:text-term-phosphor hover:decoration-term-phosphor"
                                 >
-                                    --message
-                                </label>
-                                <textarea
-                                    id="message"
-                                    name="message"
-                                    value={formData.message}
-                                    onChange={handleChange}
-                                    required
-                                    rows={5}
-                                    placeholder="tell me about your project..."
-                                    className="input-term resize-none"
-                                />
-                            </div>
-
-                            <div className="flex justify-center">
-                                <button
-                                    type="submit"
-                                    disabled={isLoading}
-                                    className="btn-term-solid w-full md:w-auto"
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <Loader2 className="w-5 h-5 animate-spin" />
-                                            sending...
-                                        </>
-                                    ) : (
-                                        <>
-                                            $ send --now
-                                            <Send className="w-5 h-5" />
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    </TerminalWindow>
-                </div>
-
-                <div className="mt-12 text-center">
-                    <p className="text-term-text text-sm font-mono">
-                        Or reach out directly at{" "}
-                        <a
-                            href={`mailto:${identity.email}`}
-                            className="text-term-phosphor hover:text-glow hover:underline transition-all"
-                        >
-                            {identity.email}
-                        </a>
-                    </p>
-                </div>
+                                    {identity.email}
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </TerminalWindow>
             </div>
-        </section>
+        </Section>
     );
 };

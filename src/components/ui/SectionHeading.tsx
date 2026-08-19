@@ -1,27 +1,18 @@
+import { Prompt, Cursor } from './Prompt';
+
 interface SectionHeadingProps {
     command: string;
     label: string;
-    align?: 'left' | 'center';
-    className?: string;
 }
 
-export const SectionHeading = ({
-    command,
-    label,
-    align = 'center',
-    className = '',
-}: SectionHeadingProps) => {
-    return (
-        <h2
-            className={`font-display text-4xl md:text-5xl text-term-phosphor text-glow ${align === 'center' ? 'text-center' : ''
-                } ${className}`}
-        >
-            <span className="sr-only">{label}</span>
-            <span aria-hidden="true">
-                <span className="text-term-phosphor/50">$&nbsp;</span>
-                {command}
-                <span className="ml-1 inline-block h-[0.85em] w-[0.5em] translate-y-[0.08em] bg-term-phosphor animate-blink" />
-            </span>
-        </h2>
-    );
-};
+/** Always left-aligned, so `.shell-output` below hangs off the same x-position. */
+export const SectionHeading = ({ command, label }: SectionHeadingProps) => (
+    <h2 className="t-heading mb-8 text-glow">
+        <span className="sr-only">{label}</span>
+        <span aria-hidden="true">
+            <Prompt className="inline-block w-[var(--gutter)]" />
+            {command}
+            <Cursor />
+        </span>
+    </h2>
+);

@@ -7,6 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Primitives. Raw values — do not reference these directly for text.
         term: {
           void: '#050706',
           panel: '#0a0f0d',
@@ -17,12 +18,39 @@ export default {
           text: '#8fa39a',
           bright: '#d8f5e8',
         },
+
+        // Semantic text ramp. Solid values pre-composited over the void; ratios vs #050706.
+        ink: {
+          strong: '#d8f5e8', // 16.9:1 — display type, values, answers
+          body: '#8fa39a',   //  7.3:1 — prose and terminal output
+          label: '#02b56f',  //  7.5:1 — labels, chrome, prompt sigils
+          hint: '#028f59',   //  4.9:1 — metadata keys and hints. The floor.
+        },
+
+        // Two border weights.
+        edge: {
+          DEFAULT: 'rgba(0,255,156,0.30)',
+          strong: 'rgba(0,255,156,0.60)',
+        },
       },
+
+      // One job per face: display = headings and hero, ui = chrome, mono = read content.
       fontFamily: {
         mono: ['"Noto Sans Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
         display: ['VT323', '"Noto Sans Mono"', 'monospace'],
         ui: ['"Share Tech Mono"', '"Noto Sans Mono"', 'monospace'],
       },
+
+      // Semantic role scale. Components name a role, never a pixel size.
+      fontSize: {
+        display: ['clamp(2.75rem, 11vw, 6rem)', { lineHeight: '0.92' }],
+        heading: ['clamp(1.75rem, 5vw, 2.75rem)', { lineHeight: '1.05' }],
+        role: ['1.125rem', { lineHeight: '1.35' }],
+        body: ['1.0625rem', { lineHeight: '1.65', letterSpacing: '0.01em' }],
+        chrome: ['0.8125rem', { lineHeight: '1.4' }],
+        meta: ['0.75rem', { lineHeight: '1.45' }],
+      },
+
       boxShadow: {
         'glow-sm': '0 0 4px rgba(0,255,156,0.35)',
         glow: '0 0 12px rgba(0,255,156,0.30), 0 0 2px rgba(0,255,156,0.55)',

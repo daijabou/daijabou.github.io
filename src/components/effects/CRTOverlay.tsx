@@ -1,6 +1,7 @@
+/** Atmosphere over page content (z-10) only, below the status bar and console. */
 export const CRTOverlay = () => {
     return (
-        <div className="pointer-events-none fixed inset-0 z-[100]" aria-hidden="true">
+        <div className="pointer-events-none fixed inset-0 z-[80]" aria-hidden="true">
             <div
                 className="absolute inset-0 opacity-[0.35]"
                 style={{
@@ -16,8 +17,9 @@ export const CRTOverlay = () => {
             <div
                 className="absolute inset-0"
                 style={{
+                    // 0.16 keeps the whole ink ramp above 4.5:1 with the scanlines composited.
                     background:
-                        'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)',
+                        'radial-gradient(ellipse at center, transparent 68%, rgba(0,0,0,0.16) 100%)',
                 }}
             />
         </div>

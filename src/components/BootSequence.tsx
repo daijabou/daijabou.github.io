@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Prompt } from './ui/Prompt';
 
 const LINES = [
     'BIOS v2.14 — phosphor display detected',
@@ -46,10 +47,10 @@ export const BootSequence = () => {
             className="fixed inset-0 z-[120] flex items-center justify-center bg-term-void px-6"
             aria-hidden="true"
         >
-            <div className="w-full max-w-xl font-mono text-sm text-term-phosphor text-glow-soft">
+            <div className="w-full max-w-5xl font-ui text-chrome text-term-phosphor text-glow-soft">
                 {LINES.slice(0, shown).map((line) => (
                     <p key={line} className="animate-boot-in">
-                        <span className="text-term-phosphor/50">$&nbsp;</span>
+                        <Prompt className="mr-2 inline" />
                         {line}
                     </p>
                 ))}

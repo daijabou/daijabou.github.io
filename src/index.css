@@ -9,15 +9,33 @@
   --term-phosphor: #00ff9c;
   --term-amber: #ffb000;
   --term-magenta: #ff2e97;
-  --term-text: #8fa39a;
-  --term-bright: #d8f5e8;
+
+  /* Semantic text ramp. Solid hex, pre-composited over the void; ratios vs --term-void. */
+  --ink-strong: #d8f5e8;
+  /* 16.9:1 */
+  --ink-body: #8fa39a;
+  /* 7.3:1 */
+  --ink-label: #02b56f;
+  /* 7.5:1 base, 4.8:1 under the CRT */
+  --ink-hint: #02b06c;
+  /* The floor. 7.2:1 on the void, 4.6:1 under the CRT layers. */
+
+  /* Two border weights. */
+  --edge: rgba(0, 255, 156, 0.30);
+  --edge-strong: rgba(0, 255, 156, 0.60);
+
+  /* Shell gutter. Matches the heading sigil width, so output hangs under the command. */
+  --gutter: 1.5rem;
+
+  /* Height of the fixed status bar. Read by body padding and the console. */
+  --statusbar-h: calc(2.75rem + 1px);
 
   font-family: 'Noto Sans Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: dark;
-  color: var(--term-text);
+  color: var(--ink-body);
   background-color: var(--term-void);
 
   font-synthesis: none;
@@ -26,11 +44,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  background-color: var(--term-void);
-  padding-bottom: 2.25rem;
+@media (min-width: 768px) {
+  :root {
+    --gutter: 2rem;
+  }
 }
 
+body {
+  background-color: var(--term-void);
+  padding-bottom: var(--statusbar-h);
+}
+
+/* Browser surfaces, themed from the palette. */
 ::selection {
   background: var(--term-phosphor);
   color: var(--term-void);
@@ -47,7 +72,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: rgba(0, 255, 156, 0.25);
-  border: 1px solid rgba(0, 255, 156, 0.4);
+  border: 1px solid var(--edge);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -64,37 +89,80 @@ body {
 }
 
 @layer components {
+
+  /* ---- Type roles. Components name a role, never a family and size by hand. ---- */
+
+  .t-display {
+    @apply font-display text-display text-ink-strong;
+  }
+
+  .t-heading {
+    @apply font-display text-heading text-term-phosphor;
+    padding-left: var(--gutter);
+    text-indent: calc(-1 * var(--gutter));
+  }
+
+  /* Job titles. font-ui, not font-display: VT323's x-height inverts the hierarchy here. */
+  .t-role {
+    @apply font-ui text-role text-ink-strong;
+  }
+
+  .t-body {
+    @apply font-mono text-base text-ink-body md:text-body;
+    line-height: 1.65;
+    letter-spacing: 0.01em;
+    max-width: 68ch;
+  }
+
+  .t-label {
+    @apply font-ui text-chrome text-ink-label;
+  }
+
+  .t-meta {
+    @apply font-ui text-meta text-ink-hint;
+  }
+
+  /* ---- Surfaces ---------------------------------------------------------- */
+
   .panel {
-    @apply border border-term-phosphor/40 bg-term-panel/80 backdrop-blur-sm;
+    @apply border border-edge bg-term-panel/80 backdrop-blur-sm;
   }
 
   .panel-bar {
-    @apply flex items-center gap-2 border-b border-term-phosphor/25 bg-term-phosphor/[0.06] px-3 py-1.5 font-ui text-xs text-term-phosphor/70;
+    @apply flex items-center gap-2 border-b border-edge bg-term-phosphor/[0.06] px-3 py-1.5 font-ui text-meta text-ink-label;
   }
 
+  /* ---- Controls. Hover brightens the edge; [data-selected] fills it. ---- */
+
   .btn-term {
-    @apply inline-flex items-center justify-center gap-2 border-2 border-term-phosphor bg-transparent px-6 py-3
-           font-ui text-term-phosphor transition-all duration-200
-           hover:bg-term-phosphor hover:text-term-void hover:shadow-glow
-           disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-term-phosphor;
+    @apply inline-flex items-center justify-center gap-2 border-2 border-edge-strong bg-transparent px-5 py-3
+           font-ui text-chrome text-term-phosphor transition-all duration-200
+           hover:border-term-phosphor hover:bg-term-phosphor/10 hover:shadow-glow-sm
+           data-[selected=true]:border-term-phosphor data-[selected=true]:bg-term-phosphor data-[selected=true]:text-term-void data-[selected=true]:shadow-glow
+           disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent;
   }
 
   .btn-term-solid {
-    @apply inline-flex items-center justify-center gap-3 border-2 border-term-phosphor bg-term-phosphor px-8 py-4
-           font-ui font-bold text-term-void shadow-glow transition-all duration-200
+    @apply inline-flex items-center justify-center gap-3 border-2 border-term-phosphor bg-term-phosphor px-6 py-3
+           font-ui text-chrome font-bold text-term-void shadow-glow transition-all duration-200
            hover:shadow-glow-lg
            disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .input-term {
-    @apply w-full border border-term-phosphor/30 bg-term-void/60 px-4 py-3 font-mono text-term-bright
-           placeholder-term-phosphor/25 caret-term-phosphor transition-all duration-200
-           focus:border-term-phosphor focus:shadow-glow-sm focus:outline-none;
+    @apply w-full border border-edge bg-term-void/60 px-4 py-3 font-mono text-base text-ink-strong md:text-body
+           caret-term-phosphor transition-all duration-200
+           focus:border-term-phosphor focus:shadow-glow-sm;
+    /* Placeholders are content, so they sit on the same contrast floor. */
+  }
+
+  .input-term::placeholder {
+    color: var(--ink-hint);
   }
 
   .chip {
-    @apply inline-block border border-term-phosphor/30 px-2 py-1 font-ui text-xs text-term-text
-           transition-colors duration-200 hover:border-term-phosphor/70 hover:text-term-phosphor;
+    @apply inline-block border border-edge px-2 py-1 font-ui text-meta text-ink-body
+           transition-colors duration-200 hover:border-edge-strong hover:text-term-phosphor;
   }
 }
 
@@ -107,11 +175,34 @@ body {
     text-shadow: 0 0 6px rgba(0, 255, 156, 0.35);
   }
 
+  /* One page-level grid, faded out down the page. */
   .grid-bg {
     background-image:
       linear-gradient(to right, rgba(0, 255, 156, 0.045) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(0, 255, 156, 0.045) 1px, transparent 1px);
     background-size: 24px 24px;
+  }
+
+  /* Output hangs under the command that produced it: one gutter, every section. */
+  .shell-output {
+    padding-left: var(--gutter);
+  }
+
+  /* Small marks still need a usable hit area. */
+  .hit-44 {
+    position: relative;
+  }
+
+  .hit-44::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 44px;
+    min-height: 44px;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
   }
 }
 

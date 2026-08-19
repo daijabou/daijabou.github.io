@@ -1,39 +1,57 @@
-import { Typewriter } from './Typewriter';
 import { GlitchText } from './effects/GlitchText';
-import { taglines } from '../lib/resumeData';
+import { Section } from './ui/Section';
+import { Prompt, Cursor } from './ui/Prompt';
+import { identity, skills } from '../lib/resumeData';
+
+/** First viewport as `whoami` output: static and selectable, no typing required. */
+const HEADLINE = 'I ship AI features into production products.';
+
+const STACK = [
+    'TypeScript',
+    'React',
+    '.NET',
+    'AWS',
+    ...skills['AI/LLM Tools'].slice(0, 2),
+];
 
 export const Hero = () => {
     return (
-        <section id="hero" className='relative h-screen bg-term-void'>
-            <div className="flex justify-center items-center h-screen grid-bg p-4">
-                <div className="flex flex-row justify-center items-center px-5">
-                    <div className="flex flex-col">
-                        <p className="font-ui text-sm md:text-base text-term-phosphor/60 mb-3">
-                            visitor@daijabou:~$ whoami
-                        </p>
+        <Section id="hero" label="Introduction" fill>
+            <p className="t-label mb-4">
+                <Prompt host={`visitor@${identity.handle}:~`} className="inline" /> whoami
+            </p>
 
-                        <h1 className="font-display text-6xl md:text-9xl text-term-bright leading-none">
-                            Hello, I'm{' '}
-                            <GlitchText text="Michael" className="text-term-phosphor text-glow" />
-                        </h1>
+            <div className="shell-output">
+                <h1 className="t-display">
+                    <GlitchText text={identity.name} className="text-term-phosphor text-glow" />
+                </h1>
 
-                        <p className="text-base mt-4 md:text-3xl font-mono">
-                            <Typewriter
-                                sentences={taglines}
-                                typingSpeed={100}
-                                deletingSpeed={50}
-                                delay={1500}
-                            />
-                        </p>
+                <p className="mt-2 font-ui text-heading text-ink-label">
+                    {identity.role}
+                </p>
 
-                        <div className="flex justify-center items-center pt-8">
-                            <a href="#about" className="btn-term">
-                                $ cd ./about
-                            </a>
-                        </div>
-                    </div>
+                <p className="t-body mt-6 text-ink-strong">
+                    {HEADLINE}
+                    <Cursor />
+                </p>
+
+                <ul className="mt-6 flex flex-wrap gap-2" aria-label="Core stack">
+                    {STACK.map((item) => (
+                        <li key={item} className="chip">
+                            {item}
+                        </li>
+                    ))}
+                </ul>
+
+                <div className="mt-10 flex flex-wrap items-center gap-3">
+                    <a href="#experience" className="btn-term-solid">
+                        $ git log --career
+                    </a>
+                    <a href="#contact" className="btn-term">
+                        $ ./contact.sh
+                    </a>
                 </div>
             </div>
-        </section>
-    )
-}
+        </Section>
+    );
+};

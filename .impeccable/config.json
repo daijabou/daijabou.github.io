@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "src/index.css"
+        ],
+        "createdAt": "2026-08-19T07:31:02.012Z",
+        "reason": "Claude's call, not the user's: PRODUCT.md records the terminal/CRT/phosphor identity as a binding brand commitment, and a phosphor measurement grid belongs to that world. The rule's own rationale was that it read as generic wallpaper; it was applied identically behind all 5 sections and is now a single page-level layer with a fade mask. User has not been asked to confirm the grid specifically."
+      }
+    ]
+  }
+}

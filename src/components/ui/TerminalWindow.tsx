@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { GitCommit } from 'lucide-react';
+import { Prompt } from './Prompt';
 
 interface TerminalWindowProps {
     title?: string;
@@ -16,18 +17,18 @@ export const TerminalWindow = ({
     variant = 'terminal',
     children,
     className = '',
-    bodyClassName = 'p-6',
+    bodyClassName = 'p-4 md:p-6',
 }: TerminalWindowProps) => {
     return (
-        <div className={`panel transition-shadow duration-300 ${className}`}>
+        <div className={`panel transition-shadow duration-200 ${className}`}>
             <div className="panel-bar">
                 {variant === 'git' ? (
-                    <GitCommit className="w-3.5 h-3.5 flex-shrink-0 text-term-amber" aria-hidden="true" />
+                    <GitCommit className="h-3.5 w-3.5 flex-shrink-0 text-ink-label" aria-hidden="true" />
                 ) : (
-                    <span className="flex-shrink-0 text-term-phosphor" aria-hidden="true">&gt;_</span>
+                    <Prompt sigil=">_" />
                 )}
                 {title && <span className="truncate">{title}</span>}
-                {meta && <span className="ml-auto flex-shrink-0 text-term-amber/70">{meta}</span>}
+                {meta && <span className="ml-auto flex-shrink-0 text-term-phosphor">{meta}</span>}
             </div>
             <div className={bodyClassName}>{children}</div>
         </div>

@@ -9,6 +9,10 @@ interface TypewriterProps {
     className?: string;
 }
 
+const prefersReducedMotion = () =>
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 export const Typewriter = ({
     sentences,
     typingSpeed = 150,
@@ -17,12 +21,17 @@ export const Typewriter = ({
     loop = true,
     className = '',
 }: TypewriterProps) => {
-    const [text, setText] = useState('');
+    // The CSS reduced-motion block zeroes CSS durations; it cannot stop a setTimeout loop.
+    const reduced = prefersReducedMotion();
+
+    const [text, setText] = useState(reduced ? (sentences[0] ?? '') : '');
     const [isDeleting, setIsDeleting] = useState(false);
     const [loopNum, setLoopNum] = useState(0);
     const [delta, setDelta] = useState(typingSpeed);
 
     useEffect(() => {
+        if (reduced) return;
+
         const handleType = () => {
             const i = loopNum % sentences.length;
             const fullText = sentences[i];
@@ -50,12 +59,15 @@ export const Typewriter = ({
         const ticker = setTimeout(handleType, delta);
 
         return () => clearTimeout(ticker);
-    }, [text, isDeleting, loopNum, sentences, typingSpeed, deletingSpeed, delay, delta, loop]);
+    }, [text, isDeleting, loopNum, sentences, typingSpeed, deletingSpeed, delay, delta, loop, reduced]);
 
     return (
         <span className={`text-term-phosphor text-glow-soft ${className}`}>
             {text}
-            <span className="ml-0.5 inline-block h-[0.9em] w-[0.5em] translate-y-[0.1em] bg-term-phosphor animate-blink" />
+            <span
+                aria-hidden="true"
+                className="ml-1 inline-block h-[0.85em] w-[0.5em] translate-y-[0.08em] bg-term-phosphor animate-blink"
+            />
         </span>
     );
 };
