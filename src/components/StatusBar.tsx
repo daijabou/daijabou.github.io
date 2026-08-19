@@ -62,10 +62,6 @@ export const StatusBar = ({ chat, onChatChange }: StatusBarProps) => {
                        bg-gradient-to-b from-term-panel to-term-void px-1.5 py-1 font-ui text-[11px]
                        text-term-phosphor/70 backdrop-blur-sm"
         >
-            <div className="flex flex-shrink-0 items-center gap-1.5 border border-term-phosphor/40 bg-term-phosphor/10 px-2 text-term-phosphor">
-                <Terminal className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="hidden sm:inline">daijabou</span>
-            </div>
 
             <nav aria-label="Sections" className="flex min-w-0 flex-1 items-stretch gap-1 overflow-hidden">
                 {SECTIONS.map((section, i) => {
